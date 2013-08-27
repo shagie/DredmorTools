@@ -6,31 +6,37 @@ use XML::Simple;
 use File::Find;
 use File::Spec;
 
-use Data::Dumper;
+use Getopt::Long;
 
-# <craftDB>
-#   <craft>
-#     <output skill="1" name="Wand of Bling" amount="1"/>
-#     <tool tag="lathe"/>
-#     <input name="Burnt Out Wand"/>
-#     <input name="Gold Ingot"/>
-#   </craft>
-# <craft>
+use Data::Dumper;
 
 my $parser = new XML::Simple;
 my @craftFiles;
 
-my $path = shift @ARGV;
+my $appdir;
+my $builddir;
+my $help;
 
-if(not defined $path) {
+my $result = GetOptions (
+	"builddir=s" => \$builddir,
+	"appdir=s"   => \$appdir,
+	"help!"      => \$help,
+	);
+
+if($help) {
+	print << "--EOHELP--";
+Help file here
+--EOHELP--
+	exit;
+}
+
+if(not defined $appdir) {
 	print "Please specify the full path to the application configuration files\n";
 	exit;
 }
 
-print $path;
-
-find(\&wantedCraft,$path);
-find(\&wantedCrust,$path);
+find(\&wantedCraft,$appdir);
+find(\&wantedCrust,$appdir);
 my @craft;
 
 my %components;
@@ -73,7 +79,7 @@ foreach my $item (@craft) {
 	}
 }
 
-print Dumper(\%tool);
+print Dumper(\%components);
 
 exit;
 foreach my $comp (keys %components) {
