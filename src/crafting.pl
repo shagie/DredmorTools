@@ -35,6 +35,8 @@ if(not defined $appdir) {
 	exit;
 }
 
+
+
 find(\&wantedCraft,$appdir);
 find(\&wantedCrust,$appdir);
 my @craft;
@@ -61,7 +63,7 @@ foreach my $item (@craft) {
 		}
 	}
 
-	print Dumper($item);
+	# print Dumper($item);
 		
 	foreach my $key (keys %{$item->{'input'}}) {
 		my $input;
@@ -71,7 +73,7 @@ foreach my $item (@craft) {
 			$input = $key;
 		}
 		foreach my $out (@out) {
-			print "$input -> $out->{'name'} ($tool $out->{'skill'})\n";
+			# print "$input -> $out->{'name'} ($tool $out->{'skill'})\n";
 			push @{$components{$input}{$tool}{$out->{'skill'}}},
 				$out->{'name'};
 			push @{$tool{$tool}{$out->{'skill'}}{$input}}, $out->{'name'};
@@ -79,7 +81,59 @@ foreach my $item (@craft) {
 	}
 }
 
-print Dumper(\%components);
+# print Dumper(\%components);
+my $file = File::Spec->catfile($builddir,"index.html");
+open(INDEX,"> $file")
+	or die "Cannot open $file for write: $!\n";
+
+print INDEX << "--EOHEADER--";
+<html>
+	<head><title>Dredmor Items</title></head>
+<body>
+<h1>Dredmor Items</h1>
+<ul>
+--EOHEADER--
+
+foreach my $item (sort keys %components) {
+	my $fname;
+	($fname = $item) =~ s/\s+//g;
+	$fname .= '.html';
+	print INDEX "<li><a href=\"$fname\">$item</a></li>\n";
+	$file = File::Spec->catfile($builddir,"$item.html");
+	open(ITEM,"> $file")
+		or die "Cannot open $file for write: $!\n";
+	print ITEM << "--EOITEMHEADER--";
+<html>
+	<head><title>Dredmor Items: $item</title></head>
+<body>
+<h1>$item</h1>
+--EOITEMHEADER--
+	
+	foreach my $tool (sort keys %{$components{$item}}) {
+		print ITEM "<h2>$tool</h2>\n";
+		foreach my $skill (sort keys %{$components{$item}{$tool}}) {
+			print ITEM "<h3>$skill</h3>\n";
+			print ITEM "<ul>\n";
+			foreach my $output (sort @{$components{$item}{$tool}{$skill}}) {
+				print ITEM "<li>$output</li>\n";
+			}
+			print ITEM "</ul>\n";
+		}
+	}
+
+	print ITEM << "--EOITEMFOOTER--";
+</body></html>
+--EOITEMFOOTER--
+
+}
+
+print INDEX << "--EOFOOTER--";
+</ul>
+</body>
+</html>
+--EOFOOTER--
+
+close(INDEX);
 
 exit;
 foreach my $comp (keys %components) {
