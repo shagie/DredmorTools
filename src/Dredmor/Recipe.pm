@@ -1,4 +1,4 @@
-Package Dredmor::Recipe;
+package Dredmor::Recipe;
 
 sub new {
 	my $class = shift;
