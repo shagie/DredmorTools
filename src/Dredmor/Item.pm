@@ -17,13 +17,13 @@ sub new {
 		'price' => '',
 		'desc'  => '',
 		
-		'make' => new Dredmor::CookBook(),
-		'use'  => new Dredmor::CookBook(),
+		'make' => [],
+		'use'  => [],
 	};
 	
 	$self->{'name'} = shift;
 	my $data = shift;
-#	print Dumper($data);
+	my $path = shift;
 	
 	$self->{'icon'} = $data->{'iconFile'};
 	$self->{'desc'} = $data->{'description'}{'text'};
@@ -37,21 +37,29 @@ sub new {
 # A use of the item (steel ingot is USED to make an steel sword)
 sub addUse {
 	my $self = shift;
+	push @{$self->{'use'}}, shift;
 }
 
 # A way to make the item (a steel ingot is made with iron, coal, and chalk)
 sub addMake {
 	my $self = shift;
+	push @{$self->{'make'}}, shift;
+}
+
+sub getName {
+	my $self = shift;
+	return $self->{'name'};
 }
 
 sub toString {
 	my $self = shift;
+	my $ret =  "$self->{'name'}\n\t$self->{'desc'}\n";
+	print "$self->{'name'}";
 	
-	return << "--EOSTR--";
-$self->{'name'}
-	$self->{'desc'}
+	$ret .= "Make:\n" . join("\n", map { $_->toString } @{$self->{'make'}}) . "\n";
+	$ret .= "Use:\n"  . join("\n", map { $_->toString } @{$self->{'use'}})  . "\n";
 
---EOSTR--
+	$ret .= "\n";
 }
 
 1;
