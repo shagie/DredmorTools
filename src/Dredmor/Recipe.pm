@@ -43,7 +43,9 @@ sub toString {
 	my $s = shift;
 	return "$s->{'tool'} ($s->{'skill'}): " .
 		join(" + ", map  { $_->getName } @{$s->{'items'}}) .
-		" = " . $s->{'output'}->getName . "\n";
+		" = " . $s->{'output'}->getName . 
+		($self->{'qty'} > 1 ? "($self->{'qty'})" : '') .
+		"\n";
 }
 
 1;

@@ -54,7 +54,6 @@ sub getName {
 sub toString {
 	my $self = shift;
 	my $ret =  "$self->{'name'}\n\t$self->{'desc'}\n";
-	print "$self->{'name'}";
 	
 	$ret .= "Make:\n" . join("\n", map { $_->toString } @{$self->{'make'}}) . "\n";
 	$ret .= "Use:\n"  . join("\n", map { $_->toString } @{$self->{'use'}})  . "\n";

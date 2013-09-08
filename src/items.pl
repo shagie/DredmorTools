@@ -75,10 +75,10 @@ foreach my $file (@{$files{'craftDB.xml'}}) {
 		} else {
 			$rec->setTool($craft->{'tool'});
 		}
-		$rec->setOutput($items{$craft->{'output'}{'name'}});
 		$rec->setInput(@inputs);
 		
 		if(defined $craft->{'output'}{'name'}) {
+			$rec->setOutput($items{$craft->{'output'}{'name'}});
 			$rec->setSkill($craft->{'output'}{'skill'});
 			if(defined $craft->{'output'}{'amount'}) {
 				$rec->setQty($craft->{'output'}{'amount'});
@@ -89,6 +89,7 @@ foreach my $file (@{$files{'craftDB.xml'}}) {
 			$items{$craft->{'output'}{'name'}}->addMake($rec);
 		} else {
 			foreach my $key (keys %{$craft->{'output'}}) {
+				$rec->setOutput($items{$key});
 				$rec->setSkill($craft->{'output'}{$key}{'skill'});
 				if(defined $craft->{'output'}{$key}{'amount'}) {
 					$rec->setQty($craft->{'output'}{$key}{'amount'});
